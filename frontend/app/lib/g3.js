@@ -1067,7 +1067,7 @@
     var points = this._svg.selectAll('circle');
     
     // existing elements
-    points
+    points.transition().duration(2000)
       .attr('cx', function(d){return plot._xScale(d["x"]);})
       .attr('cy', function(d){return plot._yScale(d["y"]);});
     return this;
