@@ -51,6 +51,7 @@ angular.module('frontendApp')
 	  .yTickFormat("")
           .x2TickFormat("")
           .y2TickFormat("")
+	  .margin(30,20,20,400)
           .draw();
       
       $http.get('http://localhost:5000/image_data').then(

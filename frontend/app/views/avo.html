@@ -10,15 +10,15 @@
 }
 </style>
 <div class="row">
-
-<div class="col-md-4" id="seismic"></div>
-<div class="col-md-4" id="scatter"></div>
+	<div class="col-md-4" id="seismic"></div>
+	<div class="col-md-4" id="scatter"></div>
 </div>
 <div class="row">
-<div class="col-md-4" id="controls">
-<label for="repeatSelect"> Feature select: </label>
-<select name="repeatSelect" id="repeatSelect" ng-model="selectedFeature" ng-change="updateScatter()">
-	<option ng-repeat="option in options.features" value="{{option}}">{{option}}</option>
-</select>
-</div>
+	<div class="col-md-6"></div>
+	<div class="col-md-4" id="controls">
+		<label for="repeatSelect"> Feature select: </label>
+		<select name="repeatSelect" id="repeatSelect" ng-model="selectedFeature" ng-change="updateScatter()">
+			<option ng-repeat="option in options.features" value="{{option}}">{{option}}</option>
+		</select>
+	</div>
 </div>

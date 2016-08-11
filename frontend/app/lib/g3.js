@@ -111,7 +111,7 @@
     
 
     var colorbar = d3.scale.linear().domain([0,1])
-          .range(['white', 'yellow']);
+          .range(['white', 'red']);
     
     var r, g, b,a;
     for(var i = 0, p = -1; i < y; ++ i){
@@ -171,30 +171,19 @@
 
   // Constructor
   // Only set variables that are set by items passed in, otherwise set using prototype
-  var line = function line(plot, x, y, x2, y2){
+  var line = function line(plot, data){
     if(!plot){ return 'Param: plot is missing, a div to attach the svg is required'; }
     this._plot = plot;
-    this._x = x;
-    this._y = y;
+    this._data = data;
 
-    if(x2 === undefined){
-      this._x2 = x;
-    } else {
-      this._x2 = x2;
-    }
-
-    if(y2 === undefined){
-      this._y2 = y;
-    } else {
-      this._y2 = y2;
-    }
     return this;
   };
 
-  line.prototype._strokeWidth = 30;
+
+  line.prototype._strokeWidth = 1;
   line.prototype._stroke = "black";
   line.prototype._cursor = "pointer";
-  line.prototype._opacity = 0;
+  line.prototype._opacity = 1;
   line.prototype._duration = 5;
 
   line.prototype.class = function(cl){
@@ -227,34 +216,31 @@
     return this;
   };
 
-  line.prototype.line = function(line){
-    if(line === undefined){ return this._line; }
-    this._line = line;
-    return this;
+  var d3line = function(xScale, yScale){
+
+    return d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
   };
 
   line.prototype.draw = function(){
-    this._line = this._plot._svg.append('line')
+    this._line = this._plot._svg.append('path')
       .attr('class', this._class)
       .style('stroke-width', this._strokeWidth)
       .style('stroke', this._stroke)
-      .style('cursor', this._cursor)
       .style('opacity', this._opacity)
-      .attr('x1', this._plot._xScale(this._x))
-      .attr('y1', this._plot._yScale(this._y))
-      .attr('x2', this._plot._xScale(this._x2))
-      .attr('y2', this._plot._yScale(this._y2));
+      .attr("fill", "none")
+      .datum(this._data)
+      .attr("d", d3line(this._plot._xScale, this._plot._yScale));
+
     return this;
   };
 
-  line.prototype.reDraw = function(x, y, x2, y2){
-    this._line
+  line.prototype.reDraw = function(data){
+    this._line.datum(data).attr("d", d3line(this._plot._xScale, this._plot._yScale))
       .transition()
       .duration(this._duration)
-      .attr('x1', this._plot._xScale(x))
-      .attr('y1', this._plot._yScale(y))
-      .attr('x2', this._plot._xScale(x2))
-      .attr('y2', this._plot._yScale(y2));
+
     return this;
   };
 
@@ -396,10 +382,17 @@
       .attr('d', lineFunc(data));
     return this;
   };
+
+
+  g3.line = 
+
+
   // Attach canvas creation function to g3
   g3.log = function(plot, data){
     return new log(plot, data);
   };
+
+
 
   // Constructor
   // Only set variables that are set by items passed in, otherwise set using prototype

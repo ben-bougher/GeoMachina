@@ -30,6 +30,10 @@ angular
 	templateUrl: 'views/avo.html',
         controller: 'AvoCtrl',
         controllerAs: 'avo'
+      }).when('/pca', {
+	templateUrl: 'views/pca.html',
+        controller: 'PCACtrl',
+        controllerAs: 'pca'
       })
       .otherwise({
         redirectTo: '/'

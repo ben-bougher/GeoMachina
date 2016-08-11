@@ -1,0 +1,42 @@
+
+<style>
+  canvas { position:absolute; }
+.container { position:relative;}
+  svg { postion: absolute; }
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+</style>
+
+
+<div class="row">
+
+	<div class="col-md-3" id="dummy">
+	</div>
+	<div class="col-md-2" id="curves">
+	</div>
+
+	<div class="col-md-2" id="igComps">
+	</div>
+
+	<div class="col-md-2" id="igScatter">
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="col-md-3" id="dummy">
+	</div>
+	<div class="col-md-2" id="dummy">
+		<input type="range" min="0.0" max="0.5" ng-model="fudge" value="{{fudge}}"
+		step=".05" ng-change="update()" />
+	</div>
+
+	<div class="col-md-2" id="pcComps">
+	</div>
+	<div class="col-md-2" id="pcScatter">
+	</div>
+</div>
+
