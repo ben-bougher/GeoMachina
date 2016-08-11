@@ -8,7 +8,7 @@ from scipy.interpolate import interp2d
 from scipy.stats import multivariate_normal
 from numpy.random import multivariate_normal as multivariate_sample
 
-from bruges.reflection import zoeppritz_rpp as rpp
+from reflection import zoeppritz_rpp as rpp
 
 EPS = np.finfo(float).eps
 from scipy import linalg

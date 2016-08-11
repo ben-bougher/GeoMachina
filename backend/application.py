@@ -1,32 +1,31 @@
+import os
 from flask import Flask, jsonify, url_for, make_response, request
-from flask.ext.restful import Api, Resource, reqparse
-
-from bruges.reflection import zoeppritz_rpp as rpp
-import sys
+from flask_restful import Api, Resource, reqparse
+from reflection import zoeppritz_rpp as rpp
 import numpy as np
 from numpy.linalg import lstsq as ls
 from numpy.random import normal, uniform, randn, multivariate_normal
-from matplotlib import pyplot as plt
-from AvoGMM import Rock, mudLine, shueyIG
-
-from bruges.filters import ricker
-
-from scipy.sparse import rand as mixer
+from AvoGMM import Rock
 from scipy.signal import tukey, kaiser
+print('imported scipy')
 from sklearn.decomposition import PCA
-
+print("slearn")
 import h5py
 import numpy as np
+
+print("WTF")
 app = Flask(__name__)
 api = Api(app)
 
-datafile = 'final.hdf5'
+print("here")
+datafile = '/var/www/GeoMachina/GeoMachina/backend/final.hdf5'
+
+assert(os.path.exists(datafile))
 def array2dict(data):
 
     return [{'x': float(x), 'y': float(y)} for x, y in data]
 
 
-    
 # for CORS (cross origin)
 @app.after_request
 def after_request(response):
@@ -116,7 +115,7 @@ class MaskData(Resource):
 class PCADemo(Resource):
 
     def get(self):
-
+        print("inside")
         ff = float(request.args.get('fudge_factor', 0.0))
 
         np.random.seed(100)
