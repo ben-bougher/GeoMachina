@@ -14,7 +14,7 @@ angular.module('frontendApp')
     $scope.fudge = 0.0;
 
     
-    var initializeScatter = function(id, type, xlim, ylim){
+    var initializeScatter = function(id, type, xlim, ylim, xtitle, ytitle){
       
       // Get the initial data
       $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/pca_demo?fudge_factor=0').then(
@@ -28,8 +28,8 @@ angular.module('frontendApp')
 	  // Make the first scatter plot
 	  var s1Plot = g3.plot(id)
 	      .height(300)
-              .xTitle('Component1')
-              .yTitle('Component2')
+              .xTitle(xtitle)
+              .yTitle(ytitle)
 	      .width(300)
 	      .xTickFormat("")
 	      .x2TickFormat("")
@@ -58,7 +58,8 @@ angular.module('frontendApp')
 	  // Make the first scatter plot
 	  var s1Plot = g3.plot("#igComps")
 	      .height(300)
-              .xTitle('theta')
+              .x2Title('theta')
+	      .xTitle('Shuey vectors')
               .yTitle('amplitude')
 	      .width(300)
 	      .xTickFormat("")
@@ -87,7 +88,8 @@ angular.module('frontendApp')
 	  // Make the first scatter plot
 	  var s1Plot = g3.plot("#pcComps")
 	      .height(300)
-              .xTitle('theta')
+              .x2Title('theta')
+	      .xTitle('Principle components')
               .yTitle('amplitude')
 	      .xTickFormat("")
 	      .y2TickFormat("")
@@ -147,8 +149,9 @@ var initCurves = function(){
 	  };
 	})};
 
-    initializeScatter('#igScatter', 'ig', 'ig_xlim', 'ig_ylim');
-    initializeScatter('#pcScatter', 'pc', 'pc_xlim', 'pc_ylim');
+    initializeScatter('#igScatter', 'ig', 'ig_xlim', 'ig_ylim', "i", "g");
+    initializeScatter('#pcScatter', 'pc', 'pc_xlim', 'pc_ylim',
+    "Component 1", "Component 2");
     plotIG();
     initComps();
     initCurves();
