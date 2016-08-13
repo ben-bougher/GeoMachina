@@ -31,15 +31,27 @@ angular.module('frontendApp')
     };
       
     var getOptions = function(){
-      $http.get("http://localhost:5000/options").then( 
+
+      $http.get("http://localhost:5000/datasets").then( 
 	function(resp){
-	  var opts = resp.data.features;
-	  $scope.selectedFeature = opts[0];
-	  $scope.options.features = opts;
+	  var opts = resp.data.datasets;
+	  $scope.selectedData = "reflection";
+	  $scope.options.datasets = resp.data.datasets;
+
+	  $http.get("http://localhost:5000/features/" + $scope.selectedData).then( 
+	    function(resp){
+	      var opts = resp.data.features;
+	      $scope.options.features = opts;
+	      $scope.selectedFeature = "IG";
+	
+
+	      initializeSeismic($scope.selectedData);
+	      initializeScatter($scope.selectedData, $scope.selectedFeature);
+	});
 	});
     };
 
-    var initializeSeismic = function(){
+    var initializeSeismic = function(dataset){
 
       // Make the seismic plot
       var vDPlot = g3.plot("#seismic")
@@ -54,7 +66,7 @@ angular.module('frontendApp')
 	  .margin(30,20,20,400)
           .draw();
       
-      $http.get('http://localhost:5000/image_data').then(
+      $http.get('http://localhost:5000/image_data/' + dataset).then(
 	function(resp){
 	  var data = resp.data.data;
 	  $scope.vd = g3.seismic(vDPlot, convertColour(data,
@@ -88,17 +100,21 @@ angular.module('frontendApp')
 	}
       });
 
-      $http.post('http://localhost:5000/mask_data', {"index": selectedIndex})
+      var feature = $scope.selectedFeature;
+      var dataset = $scope.selectedData;
+      $http.post('http://localhost:5000/mask_data/' + dataset + '/' + feature, 
+		 {"bounds": [x1, x2, y1, y2]})
 	.then(function(resp){
 	  $scope.vd.drawMask([resp.data.data]);
 	});
 
     };
 
-    var initializeScatter = function(){
+    var initializeScatter = function(dataset, feature){
       
+
       // Get the initial data
-      $http.get('http://localhost:5000/feature_data/BasicPCA').then(
+      $http.get('http://localhost:5000/feature_data/' + dataset + '/' + feature).then(
 	function(resp){
 
 	  // Make the first scatter plot
@@ -134,8 +150,12 @@ angular.module('frontendApp')
     
     $scope.updateScatter = function(){
       
+      var feature = $scope.selectedFeature;
+      var dataset = $scope.selectedData;
+
+
       $http.get('http://localhost:5000/feature_data/' + 
-		$scope.selectedFeature).then(
+		dataset + '/' + feature).then(
 	function(resp){
 
 	  $scope.scatter.reDraw(resp.data.data,
@@ -145,12 +165,27 @@ angular.module('frontendApp')
     };
 
 
+    $scope.reset = function(){
+
+      $('#scatter').empty();
+      $('#seismic').empty();
+
+      $http.get("http://localhost:5000/features/" + $scope.selectedData).then( 
+	function(resp){
+	  var opts = resp.data.features;
+	  $scope.options.features = opts;
+	  $scope.selectedFeature = opts[0];
+	
+
+	  initializeSeismic($scope.selectedData);
+	  initializeScatter($scope.selectedData, $scope.selectedFeature);
+    });
+    };
+
     $scope.options = {};
-    initializeSeismic();
-    initializeScatter();
+    
+
     getOptions();
-
-
 
   }]);
 

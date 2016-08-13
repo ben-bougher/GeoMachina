@@ -7,20 +7,23 @@ from numpy.linalg import lstsq as ls
 from numpy.random import normal, uniform, randn, multivariate_normal
 from AvoGMM import Rock
 from scipy.signal import tukey, kaiser
-print('imported scipy')
 from sklearn.decomposition import PCA
-print("slearn")
+
+from numpy import histogram2d
+
+
 import h5py
 import numpy as np
+np.random.seed(seed=10)
 
-print("WTF")
+
 app = Flask(__name__)
 api = Api(app)
 
-print("here")
-datafile = '/var/www/GeoMachina/GeoMachina/backend/final.hdf5'
 
-assert(os.path.exists(datafile))
+files = {"reflection": 'reflection.hdf5',
+         "migrated": 'seismic.hdf5'}
+         
 def array2dict(data):
 
     return [{'x': float(x), 'y': float(y)} for x, y in data]
@@ -39,29 +42,54 @@ def after_request(response):
     return response
 
 
-class Options(Resource):
+
+
+class Datasets(Resource):
 
     def get(self):
+
+        return jsonify({"datasets":files.keys()})
+
+
+    
+class Features(Resource):
+
+    def get(self, dataset):
+
+        datafile = files[dataset]
         
         with h5py.File(datafile, 'r') as f:
     
             features = [key for key in f["features"].keys()
                         if key not in ["x", "z"]]
 
-        return jsonify({"features": features})
-
+        return jsonify({"features":features})
+    
         
 class FeatureData(Resource):
 
-    def get(self, feature):
+    def get(self, dataset, feature):
 
+        datafile = files[dataset]
+
+        np.random.seed(seed=10)
+    
         with h5py.File(datafile, 'r') as f:
 
-            data = f["features"][feature][:][:,:] 
+            data = f["features"][feature][:]
+            ind_data =  f["features"]["IG"][:]
+            ind_data = ind_data * ind_data
+            ind_data = np.sum(ind_data/np.amax(ind_data),1) < .02
+     
+            points = ind_data.size /1.5
+            # subsample the small points
+            small_ind = np.random.choice(np.where(ind_data)[0],
+                                         points, replace=False)
+            all_ind = set(np.arange(data.shape[0]))
+            ind = list(all_ind - set(small_ind))
+      
+            data = data[ind, :]
 
-        if feature == "BasicPCA":
-            data *= -1
-            
         xmin, ymin = np.amin(data, 0)
         xmax, ymax = np.amax(data, 0)
         
@@ -70,18 +98,20 @@ class FeatureData(Resource):
         return jsonify({'data': xy,
                         'xmin': float(xmin),
                         'ymin': float(ymin),
-                        'xmax':float(xmax),
+                        'xmax': float(xmax),
                         'ymax': float(ymax)})
 
 class ImageData(Resource):
 
-    def get(self):
+    def get(self, dataset):
 
+        datafile = files[dataset]
+        
         with h5py.File(datafile, 'r') as f:
 
             # zero offset reflectivity
-            ref = np.abs(f["reflection"]["rpp"][:,0])
-            ref = ref.reshape(f["reflection"].attrs.get("shape"))
+            ref = np.abs(np.sum(f["adcig"]["data"],2))
+            #ref = ref.reshape(f["reflection"].attrs.get("shape"))
 
         return jsonify({
             "max": float(np.amax(ref)),
@@ -90,12 +120,21 @@ class ImageData(Resource):
 
 class MaskData(Resource):
 
-    def post(self):
+    def post(self, dataset, features):
 
-        index = request.get_json()["index"]
+        x1,x2,y1,y2 = [np.float(i) for i in request.get_json()["bounds"]]
+        datafile = files[dataset]
         with h5py.File(datafile, 'r') as f:
 
             shape = f["reflection"].attrs["shape"]
+            data = f["features"][features][:]
+            feat1 = data[:,0]
+            feat2 = data[:,1]
+
+            
+            index = np.where(np.logical_and(np.logical_and(feat1 > x1, feat1 < x2),
+                                            np.logical_and(feat2 > y1, feat2 < y2)))[0]
+            
             xfeat = f["features"]["x"][:][index]
             zfeat = f["features"]["z"][:][index]
             xref = f["reflection"]["x"][:]
@@ -115,10 +154,10 @@ class MaskData(Resource):
 class PCADemo(Resource):
 
     def get(self):
-        print("inside")
+    
         ff = float(request.args.get('fudge_factor', 0.0))
 
-        np.random.seed(100)
+        np.random.seed(10)
 
         vp_av = 2900.0
         shale = Rock(3240, 1620, 2340, 50.,50.,50.)
@@ -220,8 +259,7 @@ class PCADemo(Resource):
         c2[:,1] = coefs[1, :]
 
         curves = [array2dict(zip(theta, curve)) for curve in ref]
-        print(len(curves))
-        
+
         # payload
         payload = {"ig": array2dict(ig_new),
                    "pc": array2dict(comp),
@@ -238,14 +276,15 @@ class PCADemo(Resource):
             
         return jsonify(payload)
         
-api.add_resource(FeatureData, '/feature_data/<string:feature>',
+api.add_resource(FeatureData, '/feature_data/<string:dataset>/<string:feature>',
                  endpoint='feature_data')
-api.add_resource(ImageData, '/image_data',
+api.add_resource(ImageData, '/image_data/<string:dataset>',
                  endpoint='image_data')
 api.add_resource(PCADemo, '/pca_demo', endpoint='pca_demo')
-api.add_resource(MaskData, '/mask_data', endpoint='mask_data')
-api.add_resource(Options, '/options',
-                 endpoint='options')
+api.add_resource(MaskData, '/mask_data/<string:dataset>/<string:features>',
+                 endpoint='mask_data')
+api.add_resource(Features, '/features/<string:dataset>', endpoint='/features')
+api.add_resource(Datasets, '/datasets', endpoint='/datasets')
 
 if __name__ == '__main__':
     

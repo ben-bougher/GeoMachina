@@ -17,7 +17,7 @@ angular.module('frontendApp')
     var initializeScatter = function(id, type, xlim, ylim){
       
       // Get the initial data
-      $http.get('http://localhost:5000/pca_demo?fudge_factor=0').then(
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/pca_demo?fudge_factor=0').then(
 	function(resp){
 
 	  var data = resp.data;
@@ -50,7 +50,7 @@ angular.module('frontendApp')
  var plotIG = function(){
       
       // Get the initial data
-      $http.get('http://localhost:5000/pca_demo?fudge_factor=0').then(
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/pca_demo?fudge_factor=0').then(
 	function(resp){
 
 	  var data = resp.data;
@@ -79,7 +79,7 @@ angular.module('frontendApp')
  var initComps = function(){
       
       // Get the initial data
-      $http.get('http://localhost:5000/pca_demo?fudge_factor=0').then(
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/pca_demo?fudge_factor=0').then(
 	function(resp){
 
 	  var data = resp.data;
@@ -114,7 +114,7 @@ angular.module('frontendApp')
 var initCurves = function(){
       
       // Get the initial data
-      $http.get('http://localhost:5000/pca_demo?fudge_factor=0').then(
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/pca_demo?fudge_factor=0').then(
 	function(resp){
 
 	  var data = resp.data;
@@ -157,7 +157,7 @@ var initCurves = function(){
 
       
       var fudge = $scope.fudge.toString()
-      var url = 'http://localhost:5000/pca_demo?fudge_factor='.concat(fudge);
+      var url = 'http://ec2-52-90-110-234.compute-1.amazonaws.com/pca_demo?fudge_factor='.concat(fudge);
       // Get the initial data
       $http.get(url).then(
 	function(resp){

@@ -35,7 +35,7 @@
       .attr('height', this._data[0][0].length)
       .style('width', width +  'px')
       .style('height', height + 'px')
-      .style('opacity', this._opacity)
+      .style('opacity', 0.3)
       .style('z-index', 1)
       .style('top', top +  'px')
       .style('left', left + padding + 'px');

@@ -14,9 +14,15 @@
 	<div class="col-md-4" id="scatter"></div>
 </div>
 <div class="row">
-	<div class="col-md-6"></div>
-	<div class="col-md-4" id="controls">
-		<label for="repeatSelect"> Feature select: </label>
+	<div class="col-md-3"></div>
+	<div class="col-md-4" id=datasets">
+		<label for="dataSelect"> Dataset: </label>
+		<select name="dataSelect" id="dataSelect" ng-model="selectedData" ng-change="reset()">
+			<option ng-repeat="option in options.datasets" value="{{option}}">{{option}}</option>
+		</select>
+	</div>
+	<div class="col-md-4" id=features">
+		<label for="repeatSelect"> Projection: </label>
 		<select name="repeatSelect" id="repeatSelect" ng-model="selectedFeature" ng-change="updateScatter()">
 			<option ng-repeat="option in options.features" value="{{option}}">{{option}}</option>
 		</select>
