@@ -32,13 +32,13 @@ angular.module('frontendApp')
       
     var getOptions = function(){
 
-      $http.get("http://localhost:5000/datasets").then( 
+      $http.get("http://ec2-52-90-110-234.compute-1.amazonaws.com/datasets").then( 
 	function(resp){
 	  var opts = resp.data.datasets;
 	  $scope.selectedData = "reflection";
 	  $scope.options.datasets = resp.data.datasets;
 
-	  $http.get("http://localhost:5000/features/" + $scope.selectedData).then( 
+	  $http.get("http://ec2-52-90-110-234.compute-1.amazonaws.com/features/" + $scope.selectedData).then( 
 	    function(resp){
 	      var opts = resp.data.features;
 	      $scope.options.features = opts;
@@ -66,7 +66,7 @@ angular.module('frontendApp')
 	  .margin(30,20,20,400)
           .draw();
       
-      $http.get('http://localhost:5000/image_data/' + dataset).then(
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/image_data/' + dataset).then(
 	function(resp){
 	  var data = resp.data.data;
 	  $scope.vd = g3.seismic(vDPlot, convertColour(data,
@@ -102,7 +102,7 @@ angular.module('frontendApp')
 
       var feature = $scope.selectedFeature;
       var dataset = $scope.selectedData;
-      $http.post('http://localhost:5000/mask_data/' + dataset + '/' + feature, 
+      $http.post('http://ec2-52-90-110-234.compute-1.amazonaws.com/mask_data/' + dataset + '/' + feature, 
 		 {"bounds": [x1, x2, y1, y2]})
 	.then(function(resp){
 	  $scope.vd.drawMask([resp.data.data]);
@@ -114,7 +114,7 @@ angular.module('frontendApp')
       
 
       // Get the initial data
-      $http.get('http://localhost:5000/feature_data/' + dataset + '/' + feature).then(
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/feature_data/' + dataset + '/' + feature).then(
 	function(resp){
 
 	  // Make the first scatter plot
@@ -154,7 +154,7 @@ angular.module('frontendApp')
       var dataset = $scope.selectedData;
 
 
-      $http.get('http://localhost:5000/feature_data/' + 
+      $http.get('http://ec2-52-90-110-234.compute-1.amazonaws.com/feature_data/' + 
 		dataset + '/' + feature).then(
 	function(resp){
 
@@ -170,7 +170,7 @@ angular.module('frontendApp')
       $('#scatter').empty();
       $('#seismic').empty();
 
-      $http.get("http://localhost:5000/features/" + $scope.selectedData).then( 
+      $http.get("http://ec2-52-90-110-234.compute-1.amazonaws.com/features/" + $scope.selectedData).then( 
 	function(resp){
 	  var opts = resp.data.features;
 	  $scope.options.features = opts;

@@ -22,7 +22,8 @@ api = Api(app)
 
 
 files = {"reflection": 'reflection.hdf5',
-         "migrated": 'seismic.hdf5'}
+         "migrated": 'seismic.hdf5',
+         "poorly_processed": 'poor_process.hdf5'}
          
 def array2dict(data):
 
