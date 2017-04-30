@@ -1,12 +1,7 @@
-# viz2
+# GeoMachina
 
-This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
-version 0.15.1.
+Interactive demo used for my 2016 thesis defense. Demonstrates how to use dimensionality reduction techniques to find hydrocarbon reservoirs in seismic datasets. 
 
-## Build & development
+Demo: http://ec2-52-91-78-30.compute-1.amazonaws.com/#/avo
 
-Run `grunt` for building and `grunt serve` for preview.
 
-## Testing
-
-Running `grunt test` will run the unit tests with karma.
